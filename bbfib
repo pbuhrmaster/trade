@@ -1,0 +1,47 @@
+// This strategy uses Bollinger bands and Fibonacci retracements to identify potential entry and exit points
+
+// Bollinger bands are a technical analysis tool that consists of a moving average and two bands that are a certain number of standard deviations above and below the moving average
+// Fibonacci retracements are horizontal lines that indicate areas where the price may potentially experience support or resistance
+
+// The strategy will buy when the price touches the lower Bollinger band and the Fibonacci retracement level is at the 38.2% level
+// The strategy will sell when the price touches the upper Bollinger band and the Fibonacci retracement level is at the 61.8% level
+
+// Adjustable Parameters
+input length = 20; // Number of periods for the moving average and Bollinger bands
+input standardDeviations = 2; // Number of standard deviations for the Bollinger bands
+input retracementLevel = 38.2; // Fibonacci retracement level for entry
+input exitLevel = 61.8; // Fibonacci retracement level for exit
+
+// Bollinger bands
+plot upperBand = BollingerBands(length, standardDeviations).upper;
+plot lowerBand = BollingerBands(length, standardDeviations).lower;
+
+// Fibonacci retracement
+plot retracement = FibonacciRetracement(retracementLevel, exitLevel).level;
+
+// Entry and exit signals
+longCondition = low crosses below lowerBand and retracement crosses below retracementLevel;
+shortCondition = high crosses above upperBand and retracement crosses above exitLevel;
+
+// Set up the strategy
+strategy.entry("Long", strategy.long, when = longCondition);
+strategy.exit("Long", when = shortCondition);
+strategy.entry("Short", strategy.short, when = shortCondition);
+strategy.exit("Short", when = longCondition);
+
+// Plot the signals
+plot longSignal = longCondition;
+longSignal.SetPaintingStrategy(PaintingStrategy.ARROW_UP);
+longSignal.SetLineWeight(3);
+longSignal.SetDefaultColor(color.green);
+
+plot shortSignal = shortCondition;
+shortSignal.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN);
+shortSignal.SetLineWeight(3);
+shortSignal.SetDefaultColor(color.red);
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © prestonb7
+
+//@version=5
+indicator("My script")
+plot(close)
